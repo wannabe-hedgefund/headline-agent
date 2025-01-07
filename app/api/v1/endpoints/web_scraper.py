@@ -5,7 +5,6 @@ from python_utils.logging.logging import init_logger
 from bs4 import BeautifulSoup
 
 import httpx
-import asyncio
 
 from app.schemas.web_scraper import WebScraperConfig, WebScraperResponse
 from app import paths
