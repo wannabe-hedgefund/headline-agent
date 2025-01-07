@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 import httpx
 import asyncio
+import requests
 
 from app.schemas.web_scraper import WebScraperConfig
 from app import paths
@@ -37,6 +38,14 @@ async def scrape(ticker: str):
     '''
 
     ''' Step 1: Fetch page '''
+    agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
+    headers = {'User-Agent': agent}
+    url = 'https://finance.yahoo.com/quote/AAPL/news'
+    data = requests.get(url, headers=headers)
+    soup = BeautifulSoup(data.text, features="lxml")
+
+    headline = soup.findAll('h3', class_='clamp yf-18q3fnf', limit=None)
+
     # yahoo_finance_url = web_scraper_config.base_url.format(ticker=ticker)
 
     # try:
