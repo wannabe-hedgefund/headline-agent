@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 import httpx
 import asyncio
 
-from app.schemas.web_scraper import WebScraperConfig
+from app.schemas.web_scraper import WebScraperConfig, WebScraperResponse
 from app import paths
 
 # Initialize logger
@@ -21,7 +21,7 @@ web_scraper_config = WebScraperConfig.from_yaml(paths.WEB_SCRAPER_CONFIG_DIR)
 
 ''' API '''
 @router.get('/scrape')
-async def scrape(ticker: str):
+async def scrape(ticker: str) -> WebScraperResponse:
     '''
     Description: Scrapes yahoo finance for news articles
 
@@ -33,17 +33,18 @@ async def scrape(ticker: str):
         ticker (str): ticker of stock that we're scraping for
     
     Return:
-        TBD
+        headline_list_response (WebScraperResponse): list of headlines
     '''
-
-    ''' Step 1: Fetch page '''
-
-    yahoo_finance_url = web_scraper_config.base_url.format(ticker=ticker)
 
     try:
         async with httpx.AsyncClient(timeout=web_scraper_config.timeout) as client:
+            
+            ''' Step 1: Fetch page '''
+            # format URI
+            yahoo_finance_url = web_scraper_config.base_url.format(ticker=ticker)
+
+            # Request page
             logger.info(f'Calling {yahoo_finance_url}')
-            logger.info(web_scraper_config.headers)
             yahoo_articles_raw_data = await client.get(url=yahoo_finance_url, headers=web_scraper_config.headers)
             yahoo_articles_raw_data.raise_for_status()
 
@@ -55,11 +56,13 @@ async def scrape(ticker: str):
             soup = BeautifulSoup(yahoo_articles_raw_data.text, 'html.parser')
             headlines = soup.findAll('h3', class_='clamp yf-18q3fnf', limit=None)
 
+            # Extract each string
+            logger.info("Extracting headlines from soup")
             headline_list = [headline.text for headline in headlines]
 
-            logger.info(headline_list)
-
-            # return response.text
+            # Returning list of headlines
+            headline_list_response = WebScraperResponse(headline_list=headline_list)
+            return headline_list_response
 
     except httpx.HTTPError as e:
         raise HTTPException(
@@ -67,4 +70,3 @@ async def scrape(ticker: str):
             detail=f"Failed to fetch news: {str(e)}"
         )
     
-    return {"message": "test"}

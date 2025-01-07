@@ -2,7 +2,7 @@
 
 import yaml
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, List
 
 class WebScraperConfig(BaseModel):
     base_url: str
@@ -16,3 +16,5 @@ class WebScraperConfig(BaseModel):
             config_dict = yaml.safe_load(f)
         return cls.model_validate(config_dict)
     
+class WebScraperResponse(BaseModel):
+    headline_list: List[str]
