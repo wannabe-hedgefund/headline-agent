@@ -22,5 +22,11 @@ async def predict(headline_request: HeadlineRequest):
     Step 2: Run sentiment analysis on news article's headlines (maybe entire article)
     Step 3: Gather sentiment over all recent news articles and historcal price and build a prompt
     Step 4: Send to LLM for price prediction.
+
+    Args:
+        headline_request: user input of ticker they want to check
+
+    Return:
+        TBD
     '''
     pass
