@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 
 import httpx
 import asyncio
-import requests
 
 from app.schemas.web_scraper import WebScraperConfig
 from app import paths
@@ -38,27 +37,34 @@ async def scrape(ticker: str):
     '''
 
     ''' Step 1: Fetch page '''
-    agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15'
-    headers = {'User-Agent': agent}
-    url = 'https://finance.yahoo.com/quote/AAPL/news'
-    data = requests.get(url, headers=headers)
-    soup = BeautifulSoup(data.text, features="lxml")
 
-    headline = soup.findAll('h3', class_='clamp yf-18q3fnf', limit=None)
+    yahoo_finance_url = web_scraper_config.base_url.format(ticker=ticker)
 
-    # yahoo_finance_url = web_scraper_config.base_url.format(ticker=ticker)
+    try:
+        async with httpx.AsyncClient(timeout=web_scraper_config.timeout) as client:
+            logger.info(f'Calling {yahoo_finance_url}')
+            logger.info(web_scraper_config.headers)
+            yahoo_articles_raw_data = await client.get(url=yahoo_finance_url, headers=web_scraper_config.headers)
+            yahoo_articles_raw_data.raise_for_status()
 
-    # try:
-    #     async with httpx.AsyncClient(timeout=web_scraper_config.timeout) as client:
-    #         logger.info(f'Calling {yahoo_finance_url}')
-    #         response = await client.get(url=yahoo_finance_url, headers=web_scraper_config.headers)
-    #         response.raise_for_status()
-    #         # return response.text
+            logger.info(f'Successfully retrieved articles from: {yahoo_finance_url}')
 
-    # except httpx.HTTPError as e:
-    #     raise HTTPException(
-    #         status_code=503,
-    #         detail=f"Failed to fetch news: {str(e)}"
-    #     )
+            ''' Step 2: Fetch headlines '''
+            logger.info(f"Parsing raw data")
+
+            soup = BeautifulSoup(yahoo_articles_raw_data.text, 'html.parser')
+            headlines = soup.findAll('h3', class_='clamp yf-18q3fnf', limit=None)
+
+            headline_list = [headline.text for headline in headlines]
+
+            logger.info(headline_list)
+
+            # return response.text
+
+    except httpx.HTTPError as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Failed to fetch news: {str(e)}"
+        )
     
-    # return {"message": "test"}
+    return {"message": "test"}
