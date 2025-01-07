@@ -8,6 +8,7 @@ class WebScraperConfig(BaseModel):
     base_url: str
     headers: Dict[str, str]
     timeout: int
+    min_articles: int
     max_articles: int
 
     @classmethod

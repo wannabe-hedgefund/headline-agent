@@ -67,6 +67,16 @@ async def scrape(ticker: str) -> WebScraperResponse:
             logger.info("Extracting headlines from soup")
             headline_list = [headline.text for headline in headlines]
 
+            # validate if we have the minimum
+            if len(headline_list) < web_scraper_config.min_articles:
+                raise HTTPException(
+                    f"Under minimum number of articles to run analysis. Minimum articles set to {web_scraper_config.min_articles}"
+                )
+
+            # Make sure to cap it to the max_articles
+            if len(headline_list) > web_scraper_config.max_articles:
+                headline_list = headline_list[:web_scraper_config.max_articles]
+
             # Returning list of headlines
             headline_list_response = WebScraperResponse(headline_list=headline_list)
             return headline_list_response
