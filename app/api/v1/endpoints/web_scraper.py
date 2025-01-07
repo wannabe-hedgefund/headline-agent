@@ -42,11 +42,12 @@ async def scrape(ticker: str) -> WebScraperResponse:
             
             ''' Step 1: Fetch page '''
             # format URI
+            ticker = ticker.upper()
             yahoo_finance_url = web_scraper_config.base_url.format(ticker=ticker)
 
             # Request page
             logger.info(f'Calling {yahoo_finance_url}')
-            
+
             yahoo_articles_raw_data = await client.get(
                 url=yahoo_finance_url, 
                 headers=web_scraper_config.headers, 
