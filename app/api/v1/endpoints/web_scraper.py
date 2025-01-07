@@ -37,6 +37,8 @@ async def scrape(ticker: str) -> WebScraperResponse:
 
     try:
         async with httpx.AsyncClient(timeout=web_scraper_config.timeout) as client:
+
+            # TODO: Add some validation that the ticker exists
             
             ''' Step 1: Fetch page '''
             # format URI
