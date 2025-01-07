@@ -46,7 +46,7 @@ async def scrape(ticker: str) -> WebScraperResponse:
 
             # Request page
             logger.info(f'Calling {yahoo_finance_url}')
-            yahoo_articles_raw_data = await client.get(url=yahoo_finance_url, headers=web_scraper_config.headers)
+            yahoo_articles_raw_data = await client.get(url=yahoo_finance_url, headers=web_scraper_config.headers, timeout=web_scraper_config.timeout)
             yahoo_articles_raw_data.raise_for_status()
 
             logger.info(f'Successfully retrieved articles from: {yahoo_finance_url}')
