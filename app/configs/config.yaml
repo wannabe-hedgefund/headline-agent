@@ -1,0 +1,7 @@
+web_scraper_dns: http://localhost:4461/v1/web-scraper/scrape
+model_gateway: http://localhost:4460
+
+sentiment_model: roberta_sentiment
+llm_model: claude-3-5-sonnet-20240620
+
+prompt_template: something
