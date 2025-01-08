@@ -3,6 +3,7 @@
 from fastapi import APIRouter, HTTPException
 from python_utils.logging.logging import init_logger
 from bs4 import BeautifulSoup
+import yfinance as yf
 
 import httpx
 
@@ -37,8 +38,12 @@ async def scrape(ticker: str) -> WebScraperResponse:
 
     try:
         async with httpx.AsyncClient(timeout=web_scraper_config.timeout) as client:
-
-            # TODO: Add some validation that the ticker exists
+            
+            # check if ticker exists
+            valid_ticker_data = yf.Ticker(ticker.upper())
+            info = valid_ticker_data.info
+            if info['trailingPegRatio'] is None:
+                raise HTTPException(status_code=400, detail='Invalid ticker')
             
             ''' Step 1: Fetch page '''
             # format URI
