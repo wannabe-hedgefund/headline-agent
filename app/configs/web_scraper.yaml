@@ -1,2 +1,7 @@
 base_url: https://finance.yahoo.com/quote/{ticker}/news/
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Safari/605.1.15"
 timeout: 30
+min_articles: 5
+max_articles: 15
+retry_attempts: 3
