@@ -61,12 +61,14 @@ async def predict(headline_request: HeadlineRequest):
     }
 
     async with httpx.AsyncClient() as client:
+        logger.info(f"Calling {web_scraper_url}")
         web_scraper_response = await client.get(
             url=web_scraper_url,
             params=params
         )
 
     headlines = web_scraper_response.json()["headline_list"]
+    logger.info(f"Successfully fetched latest news articles for {ticker}")
 
     ''' Step 2.2: Historical stock data '''
     logger.info(f'Fetching 1mo of {ticker} price data')
