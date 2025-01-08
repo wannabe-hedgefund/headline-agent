@@ -40,10 +40,13 @@ async def scrape(ticker: str) -> WebScraperResponse:
         async with httpx.AsyncClient(timeout=web_scraper_config.timeout) as client:
             
             # check if ticker exists
+            logger.info(f"Validing if {ticker} is valid.")
             valid_ticker_data = yf.Ticker(ticker.upper())
             info = valid_ticker_data.info
             if info['trailingPegRatio'] is None:
                 raise HTTPException(status_code=400, detail='Invalid ticker')
+            
+            logger.info(f"{ticker} is valid.")
             
             ''' Step 1: Fetch page '''
             # format URI
