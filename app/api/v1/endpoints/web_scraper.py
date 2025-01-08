@@ -39,11 +39,18 @@ async def scrape(ticker: str) -> WebScraperResponse:
         async with httpx.AsyncClient(timeout=web_scraper_config.timeout) as client:
 
             # TODO: Add some validation that the ticker exists
+
             
             ''' Step 1: Fetch page '''
             # format URI
             ticker = ticker.upper()
             yahoo_finance_url = web_scraper_config.base_url.format(ticker=ticker)
+
+            # check if ticker exists
+            valid_ticker_data = yf.Ticker(ticker)
+            info = valid_ticker_data.info
+            if info['trailingPegRatio'] is None:
+                raise HTTPException(status_code=404, detail='Invalid ticker')
 
             # Request page
             logger.info(f'Calling {yahoo_finance_url}')
