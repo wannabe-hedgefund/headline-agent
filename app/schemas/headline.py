@@ -18,3 +18,9 @@ class HeadlineConfig(BaseModel):
         with open(file, "r") as f:
             config_dict = yaml.safe_load(f)
         return cls.model_validate(config_dict)
+    
+class RobertaSentimentResponse(BaseModel):
+    headline: str
+    negative: float
+    neutral: float
+    positive: float
