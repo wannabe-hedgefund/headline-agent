@@ -7,6 +7,7 @@ import yfinance as yf
 import httpx
 
 from app.schemas.headline import HeadlineRequest, HeadlineConfig
+from app.helpers.async_process import async_handler
 from app import paths
 
 # Initialize logger
@@ -67,6 +68,7 @@ async def predict(headline_request: HeadlineRequest):
             params=params
         )
 
+    # Fetched list of headlines of ticker
     headlines = web_scraper_response.json()["headline_list"]
     logger.info(f"Successfully fetched latest news articles for {ticker}")
 
@@ -77,5 +79,13 @@ async def predict(headline_request: HeadlineRequest):
     stock_data_start_date = stock_data_end_date - timedelta(days=31)
     ticker_hist = ticker_info.history(start=stock_data_start_date)
     logger.info(f'Successfully fetched price history of {ticker}')
+
+    ''' Step 3: Run sentiment analysis '''
+    headlines_sentiments = await async_handler(
+        headlines=headlines,
+        model_gateway=headline_config.model_gateway
+    )
+
+    return headlines_sentiments
 
     return {"message": "test"}
