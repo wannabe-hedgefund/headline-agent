@@ -2,12 +2,12 @@
 
 from fastapi import APIRouter, HTTPException
 from python_utils.logging.logging import init_logger
-from datetime import datetime, timedelta
+import asyncio
 import yfinance as yf
-import httpx
 
 from app.schemas.headline import HeadlineRequest, HeadlineConfig
 from app.helpers.async_process import async_handler
+from app.helpers.api import webscrape_headlines, ticker_price_history
 from app import paths
 
 # Initialize logger
@@ -52,33 +52,12 @@ async def predict(headline_request: HeadlineRequest):
     
     logger.info(f"{ticker} is valid.")
 
-    # TODO: use Thread library for multi-threading. Need to disable GIL. Combine step 2.1 and 2.2
-    ''' Step 2.1: Scrape for articles '''
+    ''' Step 2: Scrape for articles and fetch ticker history '''
 
-    logger.info(f"Looking for headlines for {ticker}")
-    web_scraper_url = headline_config.web_scraper_dns
-    params = {
-        "ticker": ticker
-    }
-
-    async with httpx.AsyncClient() as client:
-        logger.info(f"Calling {web_scraper_url}")
-        web_scraper_response = await client.get(
-            url=web_scraper_url,
-            params=params
-        )
-
-    # Fetched list of headlines of ticker
-    headlines = web_scraper_response.json()["headline_list"]
-    logger.info(f"Successfully fetched latest news articles for {ticker}")
-
-    ''' Step 2.2: Historical stock data '''
-    logger.info(f'Fetching 1mo of {ticker} price data')
-    
-    stock_data_end_date = datetime.now()
-    stock_data_start_date = stock_data_end_date - timedelta(days=31)
-    ticker_hist = ticker_info.history(start=stock_data_start_date)
-    logger.info(f'Successfully fetched price history of {ticker}')
+    headlines, ticker_hist = await asyncio.gather(
+        webscrape_headlines(ticker=ticker, web_scraper_dns=headline_config.web_scraper_dns),
+        ticker_price_history(ticker=ticker, ticker_info=ticker_info)
+    )
 
     ''' Step 3: Run sentiment analysis '''
     headlines_sentiments = await async_handler(
