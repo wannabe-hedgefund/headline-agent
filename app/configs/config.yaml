@@ -1,7 +1,36 @@
 web_scraper_dns: http://localhost:4461/v1/web-scraper/scrape
-model_gateway: http://localhost:4460/v1/predict
+slm_gateway: http://localhost:4460/v1/predict
+llm_gateway: http://localhost:4460/v1/llm/generate
 
 sentiment_model: roberta_sentiment
-llm_model: claude-3-5-sonnet-20240620
 
-prompt_template: something
+llm_config:
+  llm_model: claude-3-5-sonnet-20240620
+  temperature: 0.0
+  prompt_template: |
+    Please do not hallucinate. Do not make up factual information. Only use the data provided.
+    
+    You are a financial analyst specialized in risk management and stock prediction.
+    You will be provided with two key pieces of information:
+
+    1. Historical price data of the last 31 days. Please consider:
+      - The highest closing price was {max_close} on {max_close_date}.
+      - The lowest closing price was {min_close} on {min_close_date}.
+      - Current closing price: {current_close}
+      - 31-day average closing price: {avg_close}
+    2. The latest news and its headlines sentiment analysis. {sentiment_summary}. Please consider:
+      - The headline content
+      - Sentiment scores
+      - Temporal relevance
+      - Sentiment trend patterns
+
+    Task:
+    Based on the provided historical price data and news sentiment, predict the likely price movement for {ticker} tomorrow.
+
+    Please provide:
+    - The price range of the {ticker} stock.
+    - Confidence level for the prediction.
+
+    Please provide it in exactly this format with no additional text:
+    Price Range: $XX.XX - $XX.XX
+    Confidence Level: N
