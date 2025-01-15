@@ -142,4 +142,4 @@ async def predict(headline_request: HeadlineRequest):
         )
 
 
-    return llm_response
+    return llm_response.json()
