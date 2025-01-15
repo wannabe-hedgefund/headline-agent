@@ -141,5 +141,6 @@ async def predict(headline_request: HeadlineRequest):
             json=llm_payload
         )
 
+    logger.info(f'Successfully evaluated {ticker}')
 
     return llm_response.json()
