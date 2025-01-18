@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 from python_utils.logging.logging import init_logger
+from python_utils.decorators.utils import timeit_async
 import asyncio
 import yfinance as yf
 import httpx
@@ -22,6 +23,7 @@ router = APIRouter()
 
 ''' API '''
 @router.post('/predict')
+@timeit_async
 async def predict(headline_request: HeadlineRequest):
     '''
     Description: Predict specific stock trend using sentiment analysis
