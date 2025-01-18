@@ -1,5 +1,5 @@
 web_scraper_dns: http://localhost:4461/v1/web-scraper/scrape
-slm_gateway: http://localhost:4460/v1/predict
+slm_gateway: http://localhost:4460/v1/slm/predict
 llm_gateway: http://localhost:4460/v1/llm/generate
 
 sentiment_model: roberta_sentiment
@@ -29,8 +29,10 @@ llm_config:
 
     Please provide:
     - The price range of the {ticker} stock.
-    - Confidence level for the prediction.
+    - Confidence level for the prediction. 1-10, 10 being the most confident.
 
     Please provide it in exactly this format with no additional text:
     Price Range: $XX.XX - $XX.XX
     Confidence Level: N
+
+    Do not give me an explanation on anything. Do not add extra comments. Don't even say anything else except the provided format.
