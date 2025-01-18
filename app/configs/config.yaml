@@ -5,7 +5,7 @@ llm_gateway: http://localhost:4460/v1/llm/generate
 sentiment_model: roberta_sentiment
 
 llm_config:
-  llm_model: claude-3-5-sonnet-20240620
+  llm_model: llama3.2
   temperature: 0.0
   prompt_template: |
     Please do not hallucinate. Do not make up factual information. Only use the data provided.
